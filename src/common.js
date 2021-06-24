@@ -1,30 +1,42 @@
-const { merge, fromEvent, Observable } = rxjs;
-const { ajax } = rxjs.ajax;
-const { map, switchMap, partition, pluck, first, share } = rxjs.operators;
+import {mockJsonRes} from "./mock.js";
+
+const {merge, fromEvent, Observable, of} = rxjs;
+const {ajax} = rxjs.ajax;
+const {map, switchMap, partition, pluck, first, share} = rxjs.operators;
 
 export function handleAjax(property) {
+    const withMock = true;
     return obs$ => obs$
-    .pipe(
-        map(jsonRes => {
-            if (jsonRes.error) {
-                if (jsonRes.error.code === "4") {   // 결과가 존재하지 않는 경우
-                    return [];
-                } else {
-                    throw jsonRes.error;
-                }
-            } else {
-                if (Array.isArray(jsonRes[property])) {
-                    return jsonRes[property];
-                } else {
-                    if (jsonRes[property]) {
-                        return [jsonRes[property]];   // 1건만 전달된 경우 객체로 넘겨져 옮.
+        .pipe(
+            map(jsonRes => {
+                console.log(`handleAjax.jsonRes: ${jsonRes}`)
+                if (jsonRes.error) {
+                    if (jsonRes.error.code === "4") {   // 결과가 존재하지 않는 경우
+                        if (withMock) {
+                            return mockJsonRes(property);
+                        } else {
+                            return [];
+                        }
                     } else {
-                        return [];
+                        throw jsonRes.error;
+                    }
+                } else {
+                    if (Array.isArray(jsonRes[property])) {
+                        return jsonRes[property];
+                    } else {
+                        if (jsonRes[property]) {
+                            return [jsonRes[property]];   // 1건만 전달된 경우 객체로 넘겨져 옮.
+                        } else {
+                            if (withMock) {
+                                return mockJsonRes(property);
+                            } else {
+                                return [];
+                            }
+                        }
                     }
                 }
-            }
-        })
-    );
+            })
+        );
 }
 
 export function parseHash() {
@@ -42,19 +54,19 @@ export function createShare$() {
         fromEvent(window, "load"),
         fromEvent(window, "hashchange")
     )
-    .pipe(
-	    map(() => parseHash()),
-    	share()
-    );
+        .pipe(
+            map(() => parseHash()),
+            share()
+        );
 
     let [render$, search$] = changedHash$.pipe(
-        partition(({ routeId }) => routeId)
+        partition(({routeId}) => routeId)
     );
     render$ = render$
-    .pipe(
-        switchMap(({ routeId }) => ajax.getJSON(`/station/pass/${routeId}`)),
-        handleAjax("busRouteStationList")
-    );
+        .pipe(
+            switchMap(({routeId}) => ajax.getJSON(`/station/pass/${routeId}`)),
+            handleAjax("busRouteStationList")
+        );
 
     return {
         render$,
@@ -75,9 +87,9 @@ function geolocation() {
         if (navigator.geolocation) {
             window.navigator.geolocation.getCurrentPosition(
                 position => observer.next(position),
-                error => observer.next(defaultPosition), 
+                error => observer.next(defaultPosition),
                 {
-                    timeout: 1000 // 1초 내에 답변이 없으면 에러처리 
+                    timeout: 1000 // 1초 내에 답변이 없으면 에러처리
                 }
             );
         } else {

@@ -1,16 +1,18 @@
-import { parseHash } from "./common.js";
+import {parseHash} from "./common.js";
+
 export default class Sidebar {
     constructor($sidebar) {
         this.$sidebar = $sidebar;
         this.$list = $sidebar.querySelector("ul");
         this.$title = $sidebar.querySelector(".title");
     }
+
     render(stations) {
         // list에 표기할 버스가 지나가는 정류소들 표시
         const {
             routeNum
         } = parseHash();
-        this.$title.innerHTML = `${routeNum} 버스 노선`;  
+        this.$title.innerHTML = `${routeNum} 버스 노선`;
         this.$list.innerHTML = stations.map(station => {
             return `<li>
                 <div class="line">
@@ -26,6 +28,7 @@ export default class Sidebar {
         }).join("");
         this.$sidebar.style.display = "block";
     }
+
     close() {
         this.$sidebar.style.display = "none";
     }

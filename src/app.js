@@ -11,14 +11,14 @@ const {
 
 const search = new AutoComplete(document.querySelector(".autocomplete"));
 const sidebar = new Sidebar(document.querySelector(".stations"));
-const map = new Map(document.querySelector(".map"), search$);
+const map = new Map(document.querySelector(".map"), sidebar, search$);
 
 render$.subscribe(stations => {
-  if (stations.length) {
-    map.drawPath(stations)
-    sidebar.render(stations);
-  } else {
-    map.deletePath();
-    sidebar.close();
-  }
+    if (stations.length) {
+        map.drawPath(stations)
+        sidebar.render(stations);
+    } else {
+        map.deletePath();
+        sidebar.close();
+    }
 });

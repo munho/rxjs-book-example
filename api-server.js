@@ -8,13 +8,12 @@ const { switchMap, map, take } = require("rxjs/operators");
 /*
  * 공공데이터포털 인증키
  * (별도의 인증키로 교체가 필요한 경우 SERVICE_KEY를 수정하셔서 사용하시면 됩니다)
- * 
- * 사용가능한 서비스: 
+ *
+ * 사용가능한 서비스:
  *  - [정류소조회서비스 조회 (경기도)](https://www.data.go.kr/dataset/15000424/openapi.do)
  *  - [버스노선 조회 (경기도)](https://www.data.go.kr/dataset/15000430/openapi.do)
  */
 const SERVICE_KEY = "MpmiwfwaQQGY9aZEbmf2UwD4K0mOx7X5H4twJWlLYCQ7h8GH0Rypsi41pMDm67H4f0bjtiSk1NUVsWS5PyOkpw%3D%3D";
-
 app.use(express.static("./"));
 
 function createRemote$(url) {
